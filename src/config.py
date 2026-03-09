@@ -17,8 +17,12 @@ class Settings(BaseSettings):
     )
 
     # LLM
-    default_model: str = Field(default="gpt-4o-mini", description="Default LiteLLM model identifier")
-    fallback_model: str = Field(default="gpt-3.5-turbo", description="Fallback model on primary failure")
+    default_model: str = Field(
+        default="gpt-4o-mini", description="Default LiteLLM model identifier"
+    )
+    fallback_model: str = Field(
+        default="gpt-3.5-turbo", description="Fallback model on primary failure"
+    )
     llm_temperature: float = Field(default=0.3, ge=0.0, le=2.0)
     llm_max_tokens: int = Field(default=4096, ge=1)
     llm_timeout: int = Field(default=120, description="LLM call timeout in seconds")
@@ -67,7 +71,7 @@ _settings: Settings | None = None
 
 def get_settings() -> Settings:
     """Return cached settings singleton."""
-    global _settings  # noqa: PLW0603
+    global _settings
     if _settings is None:
         _settings = Settings()
     return _settings
@@ -75,5 +79,5 @@ def get_settings() -> Settings:
 
 def reset_settings() -> None:
     """Reset settings singleton (useful in tests)."""
-    global _settings  # noqa: PLW0603
+    global _settings
     _settings = None

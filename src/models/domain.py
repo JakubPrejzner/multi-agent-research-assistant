@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class ResearchDepth(str, Enum):
+class ResearchDepth(StrEnum):
     """Controls the breadth and depth of research."""
 
     QUICK = "quick"
@@ -26,7 +26,7 @@ class ResearchDepth(str, Enum):
         return {self.QUICK: 3, self.STANDARD: 5, self.DEEP: 10}[self]
 
 
-class ResearchStatus(str, Enum):
+class ResearchStatus(StrEnum):
     """Lifecycle states for a research task."""
 
     PENDING = "pending"
@@ -41,7 +41,7 @@ class ResearchStatus(str, Enum):
     FAILED = "failed"
 
 
-class ReportFormat(str, Enum):
+class ReportFormat(StrEnum):
     """Supported output formats."""
 
     MARKDOWN = "markdown"
@@ -49,7 +49,7 @@ class ReportFormat(str, Enum):
     HTML = "html"
 
 
-class SourceReliability(str, Enum):
+class SourceReliability(StrEnum):
     """Assessed reliability of a source."""
 
     HIGH = "high"
@@ -91,7 +91,7 @@ class SearchResult(BaseModel):
     snippet: str
     content: str = ""
     source: str = "web"
-    retrieved_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    retrieved_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     relevance_score: float = Field(default=0.0, ge=0.0, le=1.0)
     reliability: SourceReliability = SourceReliability.UNKNOWN
 
@@ -166,7 +166,7 @@ class TaskMetadata(BaseModel):
     """Timing, cost, and usage metadata for a research run."""
 
     task_id: str = Field(default_factory=lambda: uuid.uuid4().hex)
-    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    started_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     completed_at: datetime | None = None
     total_tokens: int = 0
     prompt_tokens: int = 0
@@ -177,7 +177,7 @@ class TaskMetadata(BaseModel):
     errors: list[str] = Field(default_factory=list)
 
     def mark_completed(self) -> None:
-        self.completed_at = datetime.now(timezone.utc)
+        self.completed_at = datetime.now(UTC)
 
     @property
     def duration_seconds(self) -> float | None:

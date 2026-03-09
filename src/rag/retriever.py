@@ -73,11 +73,13 @@ class HybridRetriever:
         results: list[dict[str, Any]] = []
         for idx in scored_indices:
             if scores[idx] > 0:
-                results.append({
-                    "content": self._documents[idx],
-                    "metadata": self._metadatas[idx] if idx < len(self._metadatas) else {},
-                    "score": float(scores[idx] / max_score),
-                })
+                results.append(
+                    {
+                        "content": self._documents[idx],
+                        "metadata": self._metadatas[idx] if idx < len(self._metadatas) else {},
+                        "score": float(scores[idx] / max_score),
+                    }
+                )
         return results
 
     def retrieve(self, query: str, n_results: int = 5) -> list[dict[str, Any]]:

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from typing import Any
 from unittest.mock import AsyncMock
 
 import pytest
@@ -150,18 +149,20 @@ def sample_critique() -> CritiqueResult:
 @pytest.fixture()
 def mock_llm_response() -> str:
     """Default mock LLM response as JSON."""
-    return json.dumps({
-        "original_query": "test query",
-        "subtasks": [
-            {
-                "id": "t1",
-                "query": "sub-query 1",
-                "priority": 1,
-                "rationale": "First step",
-            }
-        ],
-        "reasoning": "Simple decomposition",
-    })
+    return json.dumps(
+        {
+            "original_query": "test query",
+            "subtasks": [
+                {
+                    "id": "t1",
+                    "query": "sub-query 1",
+                    "priority": 1,
+                    "rationale": "First step",
+                }
+            ],
+            "reasoning": "Simple decomposition",
+        }
+    )
 
 
 def create_mock_llm(responses: list[str] | None = None) -> AsyncMock:
@@ -174,18 +175,22 @@ def create_mock_llm(responses: list[str] | None = None) -> AsyncMock:
         mock.complete.return_value = '{"result": "mock response"}'
         mock.complete_with_system.return_value = '{"result": "mock response"}'
 
-    mock.usage = type("Usage", (), {
-        "prompt_tokens": 0,
-        "completion_tokens": 0,
-        "total_tokens": 0,
-        "total_cost_usd": 0.0,
-        "call_count": 0,
-        "to_dict": lambda self: {
+    mock.usage = type(
+        "Usage",
+        (),
+        {
             "prompt_tokens": 0,
             "completion_tokens": 0,
             "total_tokens": 0,
             "total_cost_usd": 0.0,
             "call_count": 0,
+            "to_dict": lambda self: {
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
+                "total_cost_usd": 0.0,
+                "call_count": 0,
+            },
         },
-    })()
+    )()
     return mock

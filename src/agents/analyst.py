@@ -69,16 +69,10 @@ class AnalystAgent(AgentBase):
         parts: list[str] = []
         for i, r in enumerate(results, 1):
             content = r.content or r.snippet
-            parts.append(
-                f"[Source {i}] {r.title}\n"
-                f"URL: {r.url}\n"
-                f"Content: {content[:3000]}\n"
-            )
+            parts.append(f"[Source {i}] {r.title}\nURL: {r.url}\nContent: {content[:3000]}\n")
         return "\n---\n".join(parts)
 
-    def _build_reliability_map(
-        self, results: list[SearchResult]
-    ) -> dict[str, SourceReliability]:
+    def _build_reliability_map(self, results: list[SearchResult]) -> dict[str, SourceReliability]:
         return {r.url: r.reliability for r in results}
 
     async def run(self, **kwargs: Any) -> AnalysisResult:

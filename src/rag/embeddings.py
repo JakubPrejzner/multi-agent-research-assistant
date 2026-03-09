@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 from numpy.typing import NDArray
@@ -17,7 +17,7 @@ _model: object | None = None
 
 
 def _get_model() -> object:
-    global _model  # noqa: PLW0603
+    global _model
     if _model is None:
         from sentence_transformers import SentenceTransformer
 
@@ -37,7 +37,7 @@ def embed_texts(texts: Sequence[str]) -> NDArray[np.float32]:
         Array of shape (len(texts), embedding_dim).
     """
     model = _get_model()
-    embeddings: NDArray[np.float32] = model.encode(  # type: ignore[union-attr]
+    embeddings: NDArray[np.float32] = model.encode(  # type: ignore[attr-defined]
         list(texts),
         show_progress_bar=False,
         convert_to_numpy=True,
@@ -55,10 +55,10 @@ def embed_query(query: str) -> NDArray[np.float32]:
         1D array of shape (embedding_dim,).
     """
     result = embed_texts([query])
-    return result[0]
+    return result[0]  # type: ignore[no-any-return]
 
 
 def reset_model() -> None:
     """Reset cached model (for testing)."""
-    global _model  # noqa: PLW0603
+    global _model
     _model = None

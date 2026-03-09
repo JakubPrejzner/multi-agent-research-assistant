@@ -12,53 +12,61 @@ from src.orchestrator.graph import build_research_graph, run_research
 
 
 def _make_plan_response() -> str:
-    return json.dumps({
-        "original_query": "test query",
-        "subtasks": [
-            {"id": "t1", "query": "test sub-query", "priority": 1, "rationale": "Core"},
-        ],
-        "reasoning": "Simple test",
-        "estimated_complexity": "low",
-    })
+    return json.dumps(
+        {
+            "original_query": "test query",
+            "subtasks": [
+                {"id": "t1", "query": "test sub-query", "priority": 1, "rationale": "Core"},
+            ],
+            "reasoning": "Simple test",
+            "estimated_complexity": "low",
+        }
+    )
 
 
 def _make_analysis_response() -> str:
-    return json.dumps({
-        "claims": [
-            {
-                "statement": "Test claim",
-                "sources": ["https://example.com"],
-                "confidence": "high",
-                "category": "test",
-            }
-        ],
-        "contradictions": [],
-        "gaps": ["missing detail"],
-        "key_themes": ["testing"],
-    })
+    return json.dumps(
+        {
+            "claims": [
+                {
+                    "statement": "Test claim",
+                    "sources": ["https://example.com"],
+                    "confidence": "high",
+                    "category": "test",
+                }
+            ],
+            "contradictions": [],
+            "gaps": ["missing detail"],
+            "key_themes": ["testing"],
+        }
+    )
 
 
 def _make_report_response() -> str:
-    return json.dumps({
-        "title": "Test Report",
-        "executive_summary": "A summary of test findings.",
-        "key_findings": ["Finding 1 [Source 1]"],
-        "contradictions": [],
-        "open_questions": ["Is this a good test?"],
-        "sources": [{"url": "https://example.com", "title": "Test", "reliability": "high"}],
-        "markdown": "# Test Report\n\nA summary.",
-    })
+    return json.dumps(
+        {
+            "title": "Test Report",
+            "executive_summary": "A summary of test findings.",
+            "key_findings": ["Finding 1 [Source 1]"],
+            "contradictions": [],
+            "open_questions": ["Is this a good test?"],
+            "sources": [{"url": "https://example.com", "title": "Test", "reliability": "high"}],
+            "markdown": "# Test Report\n\nA summary.",
+        }
+    )
 
 
 def _make_critique_response(score: float = 0.85) -> str:
-    return json.dumps({
-        "overall_score": score,
-        "strengths": ["Well-structured"],
-        "weaknesses": ["Lacks depth"],
-        "suggestions": [],
-        "unsupported_claims": [],
-        "bias_flags": [],
-    })
+    return json.dumps(
+        {
+            "overall_score": score,
+            "strengths": ["Well-structured"],
+            "weaknesses": ["Lacks depth"],
+            "suggestions": [],
+            "unsupported_claims": [],
+            "bias_flags": [],
+        }
+    )
 
 
 class TestBuildGraph:
@@ -81,28 +89,41 @@ class TestRunResearch:
                 _make_critique_response(0.85),
             ]
         )
-        mock_llm.usage = type("U", (), {
-            "prompt_tokens": 0, "completion_tokens": 0,
-            "total_tokens": 0, "total_cost_usd": 0.0,
-            "call_count": 0, "to_dict": lambda self: {},
-        })()
+        mock_llm.usage = type(
+            "U",
+            (),
+            {
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
+                "total_cost_usd": 0.0,
+                "call_count": 0,
+                "to_dict": lambda self: {},
+            },
+        )()
 
         mock_search_results = [
-            type("SR", (), {
-                "url": "https://example.com",
-                "title": "Test",
-                "snippet": "Test snippet",
-                "content": "Test content for the search result",
-                "relevance_score": 0.9,
-                "reliability": "unknown",
-            })()
+            type(
+                "SR",
+                (),
+                {
+                    "url": "https://example.com",
+                    "title": "Test",
+                    "snippet": "Test snippet",
+                    "content": "Test content for the search result",
+                    "relevance_score": 0.9,
+                    "reliability": "unknown",
+                },
+            )()
         ]
 
-        with patch("src.orchestrator.graph.LLMClient", return_value=mock_llm), \
-             patch("src.orchestrator.graph.SearchAgent") as mock_search_cls, \
-             patch("src.orchestrator.graph.chunk_documents", return_value=[]), \
-             patch("src.orchestrator.graph.VectorStore"), \
-             patch("src.orchestrator.graph.HybridRetriever"):
+        with (
+            patch("src.orchestrator.graph.LLMClient", return_value=mock_llm),
+            patch("src.orchestrator.graph.SearchAgent") as mock_search_cls,
+            patch("src.orchestrator.graph.chunk_documents", return_value=[]),
+            patch("src.orchestrator.graph.VectorStore"),
+            patch("src.orchestrator.graph.HybridRetriever"),
+        ):
             mock_searcher = AsyncMock()
             mock_searcher.run = AsyncMock(return_value=mock_search_results)
             mock_search_cls.return_value = mock_searcher
@@ -129,22 +150,31 @@ class TestRunResearch:
                 _make_plan_response(),
                 _make_analysis_response(),
                 _make_report_response(),
-                _make_critique_response(0.5),   # triggers revision
-                _make_report_response(),         # revised report
-                _make_critique_response(0.85),   # passes
+                _make_critique_response(0.5),  # triggers revision
+                _make_report_response(),  # revised report
+                _make_critique_response(0.85),  # passes
             ]
         )
-        mock_llm.usage = type("U", (), {
-            "prompt_tokens": 0, "completion_tokens": 0,
-            "total_tokens": 0, "total_cost_usd": 0.0,
-            "call_count": 0, "to_dict": lambda self: {},
-        })()
+        mock_llm.usage = type(
+            "U",
+            (),
+            {
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
+                "total_cost_usd": 0.0,
+                "call_count": 0,
+                "to_dict": lambda self: {},
+            },
+        )()
 
-        with patch("src.orchestrator.graph.LLMClient", return_value=mock_llm), \
-             patch("src.orchestrator.graph.SearchAgent") as mock_search_cls, \
-             patch("src.orchestrator.graph.chunk_documents", return_value=[]), \
-             patch("src.orchestrator.graph.VectorStore"), \
-             patch("src.orchestrator.graph.HybridRetriever"):
+        with (
+            patch("src.orchestrator.graph.LLMClient", return_value=mock_llm),
+            patch("src.orchestrator.graph.SearchAgent") as mock_search_cls,
+            patch("src.orchestrator.graph.chunk_documents", return_value=[]),
+            patch("src.orchestrator.graph.VectorStore"),
+            patch("src.orchestrator.graph.HybridRetriever"),
+        ):
             mock_searcher = AsyncMock()
             mock_searcher.run = AsyncMock(return_value=[])
             mock_search_cls.return_value = mock_searcher

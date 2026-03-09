@@ -14,33 +14,35 @@ from tests.conftest import create_mock_llm
 class TestAnalystAgent:
     @pytest.fixture()
     def analyst_response(self) -> str:
-        return json.dumps({
-            "claims": [
-                {
-                    "statement": "Quantum computers use qubits",
-                    "sources": ["https://example.com/q1"],
-                    "confidence": "high",
-                    "category": "fundamentals",
-                },
-                {
-                    "statement": "Quantum advantage achieved in specific tasks",
-                    "sources": ["https://example.com/q2"],
-                    "confidence": "medium",
-                    "category": "applications",
-                },
-            ],
-            "contradictions": [
-                {
-                    "claim_a": "Quantum computers will replace classical by 2030",
-                    "claim_b": "Classical computers will remain dominant for decades",
-                    "source_a": "https://example.com/q1",
-                    "source_b": "https://example.com/q2",
-                    "explanation": "Different timeline predictions",
-                }
-            ],
-            "gaps": ["Error correction progress"],
-            "key_themes": ["qubits", "quantum advantage"],
-        })
+        return json.dumps(
+            {
+                "claims": [
+                    {
+                        "statement": "Quantum computers use qubits",
+                        "sources": ["https://example.com/q1"],
+                        "confidence": "high",
+                        "category": "fundamentals",
+                    },
+                    {
+                        "statement": "Quantum advantage achieved in specific tasks",
+                        "sources": ["https://example.com/q2"],
+                        "confidence": "medium",
+                        "category": "applications",
+                    },
+                ],
+                "contradictions": [
+                    {
+                        "claim_a": "Quantum computers will replace classical by 2030",
+                        "claim_b": "Classical computers will remain dominant for decades",
+                        "source_a": "https://example.com/q1",
+                        "source_b": "https://example.com/q2",
+                        "explanation": "Different timeline predictions",
+                    }
+                ],
+                "gaps": ["Error correction progress"],
+                "key_themes": ["qubits", "quantum advantage"],
+            }
+        )
 
     async def test_analyzes_results(
         self,
@@ -64,9 +66,7 @@ class TestAnalystAgent:
         assert result.claims == []
         assert result.contradictions == []
 
-    async def test_source_reliability_map(
-        self, analyst_response: str
-    ) -> None:
+    async def test_source_reliability_map(self, analyst_response: str) -> None:
         results = [
             SearchResult(
                 url="https://arxiv.org/paper1",

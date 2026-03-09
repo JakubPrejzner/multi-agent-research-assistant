@@ -9,7 +9,6 @@ import pytest
 from src.agents.writer import WriterAgent
 from src.models.domain import (
     AnalysisResult,
-    Claim,
     CritiqueResult,
     Report,
     RevisionSuggestion,
@@ -20,21 +19,23 @@ from tests.conftest import create_mock_llm
 class TestWriterAgent:
     @pytest.fixture()
     def writer_response(self) -> str:
-        return json.dumps({
-            "title": "Quantum Computing: State of the Art",
-            "executive_summary": "Quantum computing represents a paradigm shift...",
-            "key_findings": [
-                "Quantum computers use qubits for parallel computation [Source 1]",
-                "Current quantum advantage is limited to specific problems [Source 2]",
-            ],
-            "contradictions": ["Timeline predictions vary widely"],
-            "open_questions": ["When will fault-tolerant QC be achieved?"],
-            "sources": [
-                {"url": "https://example.com/q1", "title": "QC Basics", "reliability": "high"},
-                {"url": "https://example.com/q2", "title": "QC Apps", "reliability": "medium"},
-            ],
-            "markdown": "# Quantum Computing Report\n\nExecutive summary...",
-        })
+        return json.dumps(
+            {
+                "title": "Quantum Computing: State of the Art",
+                "executive_summary": "Quantum computing represents a paradigm shift...",
+                "key_findings": [
+                    "Quantum computers use qubits for parallel computation [Source 1]",
+                    "Current quantum advantage is limited to specific problems [Source 2]",
+                ],
+                "contradictions": ["Timeline predictions vary widely"],
+                "open_questions": ["When will fault-tolerant QC be achieved?"],
+                "sources": [
+                    {"url": "https://example.com/q1", "title": "QC Basics", "reliability": "high"},
+                    {"url": "https://example.com/q2", "title": "QC Apps", "reliability": "medium"},
+                ],
+                "markdown": "# Quantum Computing Report\n\nExecutive summary...",
+            }
+        )
 
     async def test_writes_report(
         self,

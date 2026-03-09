@@ -6,7 +6,6 @@ from src.models.domain import (
     AnalysisResult,
     Claim,
     CritiqueResult,
-    Report,
     ResearchDepth,
     ResearchPlan,
     ResearchResult,
@@ -41,7 +40,7 @@ class TestSubTask:
         task = SubTask(query="test", priority=1)
         try:
             task.query = "modified"  # type: ignore[misc]
-            assert False, "Should have raised"
+            raise AssertionError("Should have raised")
         except Exception:
             pass
 

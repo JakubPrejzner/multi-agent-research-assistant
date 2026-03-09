@@ -64,9 +64,7 @@ class WriterAgent(AgentBase):
             parts.append("## Claims")
             for c in analysis.claims:
                 sources = ", ".join(c.sources)
-                parts.append(
-                    f"- [{c.confidence}] {c.statement} (Sources: {sources})"
-                )
+                parts.append(f"- [{c.confidence}] {c.statement} (Sources: {sources})")
 
         if analysis.contradictions:
             parts.append("\n## Contradictions")
@@ -144,9 +142,8 @@ class WriterAgent(AgentBase):
         if critique.bias_flags:
             critique_text.append(f"Bias: {', '.join(critique.bias_flags)}")
 
-        user_msg = (
-            f"Current report:\n{report.markdown}\n\n"
-            f"Critique feedback:\n" + "\n".join(critique_text)
+        user_msg = f"Current report:\n{report.markdown}\n\nCritique feedback:\n" + "\n".join(
+            critique_text
         )
 
         data = await self._llm_json_call(REVISION_SYSTEM, user_msg)

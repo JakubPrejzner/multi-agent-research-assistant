@@ -28,7 +28,7 @@ async def health_check() -> HealthResponse:
 
             r = aioredis.from_url(settings.redis_url)
             await r.ping()
-            await r.aclose()
+            await r.close()
             deps["redis"] = "ok"
         except Exception as e:
             deps["redis"] = f"error: {e}"
@@ -53,10 +53,14 @@ async def health_check() -> HealthResponse:
     if settings.anthropic_api_key:
         deps["anthropic_key"] = "configured"
 
-    overall = "healthy" if all(
-        v.startswith("ok") or v == "configured" or "key" in k or k == "llm_model"
-        for k, v in deps.items()
-    ) else "degraded"
+    overall = (
+        "healthy"
+        if all(
+            v.startswith("ok") or v == "configured" or "key" in k or k == "llm_model"
+            for k, v in deps.items()
+        )
+        else "degraded"
+    )
 
     return HealthResponse(
         status=overall,

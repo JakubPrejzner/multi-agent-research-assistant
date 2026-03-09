@@ -90,7 +90,9 @@ async def search_node(state: ResearchState) -> dict[str, Any]:
     if results:
         task_id = state.get("task_id", "default")
         try:
-            docs = [{"content": r.content or r.snippet, "url": r.url, "title": r.title} for r in results]
+            docs = [
+                {"content": r.content or r.snippet, "url": r.url, "title": r.title} for r in results
+            ]
             chunks = chunk_documents(docs, chunk_size=512, chunk_overlap=64)
 
             store = VectorStore(f"research_{task_id}")
@@ -125,7 +127,9 @@ async def analysis_node(state: ResearchState) -> dict[str, Any]:
     """Analyze search results and extract claims."""
     emitter: StatusEmitter | None = state.get("status_callback")
     if emitter:
-        await emitter.emit_phase_start("analyzing", "Extracting claims and detecting contradictions")
+        await emitter.emit_phase_start(
+            "analyzing", "Extracting claims and detecting contradictions"
+        )
 
     start = time.monotonic()
     model = state.get("model")
@@ -165,7 +169,9 @@ async def writing_node(state: ResearchState) -> dict[str, Any]:
 
     phase_name = "revising" if is_revision else "writing"
     if emitter:
-        await emitter.emit_phase_start(phase_name, f"{'Revising' if is_revision else 'Writing'} report")
+        await emitter.emit_phase_start(
+            phase_name, f"{'Revising' if is_revision else 'Writing'} report"
+        )
 
     start = time.monotonic()
     model = state.get("model")
@@ -250,7 +256,12 @@ def should_revise(state: ResearchState) -> str:
         return "finalize"
 
     if critique and critique.needs_revision and revision_count < max_revisions:
-        logger.info("Revision needed (score=%.2f, revision %d/%d)", critique.overall_score, revision_count, max_revisions)
+        logger.info(
+            "Revision needed (score=%.2f, revision %d/%d)",
+            critique.overall_score,
+            revision_count,
+            max_revisions,
+        )
         return "revise"
 
     return "finalize"
@@ -269,7 +280,7 @@ async def finalize_node(state: ResearchState) -> dict[str, Any]:
     }
 
 
-def build_research_graph() -> StateGraph:
+def build_research_graph() -> StateGraph:  # type: ignore[type-arg]
     """Construct the LangGraph StateGraph for the research workflow."""
     graph = StateGraph(ResearchState)
 
@@ -340,5 +351,5 @@ async def run_research(
         "status_callback": emitter,
     }
 
-    result: ResearchState = await compiled.ainvoke(initial_state)  # type: ignore[assignment]
+    result: ResearchState = await compiled.ainvoke(initial_state)  # type: ignore[assignment,arg-type]
     return result

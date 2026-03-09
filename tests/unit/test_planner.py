@@ -14,34 +14,36 @@ from tests.conftest import create_mock_llm
 class TestPlannerAgent:
     @pytest.fixture()
     def planner_response(self) -> str:
-        return json.dumps({
-            "original_query": "quantum computing impact",
-            "subtasks": [
-                {
-                    "id": "t1",
-                    "query": "quantum computing fundamentals explained",
-                    "priority": 1,
-                    "depends_on": [],
-                    "rationale": "Need to understand basics first",
-                },
-                {
-                    "id": "t2",
-                    "query": "quantum computing practical applications 2024",
-                    "priority": 2,
-                    "depends_on": ["t1"],
-                    "rationale": "Practical uses require understanding fundamentals",
-                },
-                {
-                    "id": "t3",
-                    "query": "quantum computing industry challenges",
-                    "priority": 3,
-                    "depends_on": [],
-                    "rationale": "Independent assessment of hurdles",
-                },
-            ],
-            "reasoning": "Split into fundamentals, applications, and challenges",
-            "estimated_complexity": "medium",
-        })
+        return json.dumps(
+            {
+                "original_query": "quantum computing impact",
+                "subtasks": [
+                    {
+                        "id": "t1",
+                        "query": "quantum computing fundamentals explained",
+                        "priority": 1,
+                        "depends_on": [],
+                        "rationale": "Need to understand basics first",
+                    },
+                    {
+                        "id": "t2",
+                        "query": "quantum computing practical applications 2024",
+                        "priority": 2,
+                        "depends_on": ["t1"],
+                        "rationale": "Practical uses require understanding fundamentals",
+                    },
+                    {
+                        "id": "t3",
+                        "query": "quantum computing industry challenges",
+                        "priority": 3,
+                        "depends_on": [],
+                        "rationale": "Independent assessment of hurdles",
+                    },
+                ],
+                "reasoning": "Split into fundamentals, applications, and challenges",
+                "estimated_complexity": "medium",
+            }
+        )
 
     async def test_creates_plan(self, planner_response: str) -> None:
         mock_llm = create_mock_llm([planner_response])
@@ -61,11 +63,13 @@ class TestPlannerAgent:
         assert plan.task_count <= ResearchDepth.QUICK.max_subtasks
 
     async def test_fallback_on_empty_subtasks(self) -> None:
-        response = json.dumps({
-            "original_query": "test",
-            "subtasks": [],
-            "reasoning": "empty",
-        })
+        response = json.dumps(
+            {
+                "original_query": "test",
+                "subtasks": [],
+                "reasoning": "empty",
+            }
+        )
         mock_llm = create_mock_llm([response])
         planner = PlannerAgent(llm=mock_llm)
         plan = await planner.run(query="test query")

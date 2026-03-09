@@ -14,39 +14,43 @@ from tests.conftest import create_mock_llm
 class TestCriticAgent:
     @pytest.fixture()
     def critic_response_good(self) -> str:
-        return json.dumps({
-            "overall_score": 0.82,
-            "strengths": ["Well-structured", "Good citations"],
-            "weaknesses": ["Could include more recent data"],
-            "suggestions": [
-                {
-                    "section": "Key Findings",
-                    "issue": "Missing 2024 developments",
-                    "suggestion": "Add recent breakthroughs",
-                    "severity": "medium",
-                }
-            ],
-            "unsupported_claims": [],
-            "bias_flags": [],
-        })
+        return json.dumps(
+            {
+                "overall_score": 0.82,
+                "strengths": ["Well-structured", "Good citations"],
+                "weaknesses": ["Could include more recent data"],
+                "suggestions": [
+                    {
+                        "section": "Key Findings",
+                        "issue": "Missing 2024 developments",
+                        "suggestion": "Add recent breakthroughs",
+                        "severity": "medium",
+                    }
+                ],
+                "unsupported_claims": [],
+                "bias_flags": [],
+            }
+        )
 
     @pytest.fixture()
     def critic_response_poor(self) -> str:
-        return json.dumps({
-            "overall_score": 0.45,
-            "strengths": ["Covers basic concepts"],
-            "weaknesses": ["Many unsupported claims", "Biased framing"],
-            "suggestions": [
-                {
-                    "section": "Executive Summary",
-                    "issue": "Overly optimistic tone",
-                    "suggestion": "Balance with challenges",
-                    "severity": "high",
-                }
-            ],
-            "unsupported_claims": ["QC will revolutionize all industries by 2025"],
-            "bias_flags": ["Tech-optimism bias"],
-        })
+        return json.dumps(
+            {
+                "overall_score": 0.45,
+                "strengths": ["Covers basic concepts"],
+                "weaknesses": ["Many unsupported claims", "Biased framing"],
+                "suggestions": [
+                    {
+                        "section": "Executive Summary",
+                        "issue": "Overly optimistic tone",
+                        "suggestion": "Balance with challenges",
+                        "severity": "high",
+                    }
+                ],
+                "unsupported_claims": ["QC will revolutionize all industries by 2025"],
+                "bias_flags": ["Tech-optimism bias"],
+            }
+        )
 
     async def test_good_critique(
         self,

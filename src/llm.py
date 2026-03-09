@@ -112,7 +112,7 @@ class LLMClient:
                 cost = None
             self.usage.record(usage_dict, cost)
 
-        content: str = response.choices[0].message.content or ""  # type: ignore[union-attr]
+        content = str(response.choices[0].message.content or "")
         logger.debug(
             "LLM call: model=%s tokens=%d elapsed=%.2fs",
             model,

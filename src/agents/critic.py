@@ -67,16 +67,19 @@ class CriticAgent(AgentBase):
         """
         report: Report = kwargs["report"]
 
+        findings = "\n".join(f"- {f}" for f in report.key_findings)
+        contras = "\n".join(f"- {c}" for c in report.contradictions)
+        questions = "\n".join(f"- {q}" for q in report.open_questions)
+        sources = "\n".join(
+            f"- {s.get('title', 'Unknown')} ({s.get('url', '')})" for s in report.sources
+        )
         user_msg = (
             f"Title: {report.title}\n\n"
             f"Executive Summary:\n{report.executive_summary}\n\n"
-            f"Key Findings:\n" + "\n".join(f"- {f}" for f in report.key_findings) + "\n\n"
-            f"Contradictions:\n" + "\n".join(f"- {c}" for c in report.contradictions) + "\n\n"
-            f"Open Questions:\n" + "\n".join(f"- {q}" for q in report.open_questions) + "\n\n"
-            f"Sources:\n" + "\n".join(
-                f"- {s.get('title', 'Unknown')} ({s.get('url', '')})"
-                for s in report.sources
-            )
+            f"Key Findings:\n{findings}\n\n"
+            f"Contradictions:\n{contras}\n\n"
+            f"Open Questions:\n{questions}\n\n"
+            f"Sources:\n{sources}"
         )
 
         data = await self._llm_json_call(CRITIC_SYSTEM, user_msg)
@@ -100,5 +103,7 @@ class CriticAgent(AgentBase):
             bias_flags=[str(b) for b in data.get("bias_flags", [])],
         )
 
-        logger.info("Critique score: %.2f (needs revision: %s)", result.overall_score, result.needs_revision)
+        logger.info(
+            "Critique score: %.2f (needs revision: %s)", result.overall_score, result.needs_revision
+        )
         return result

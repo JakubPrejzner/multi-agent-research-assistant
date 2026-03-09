@@ -9,7 +9,6 @@ from src.models.domain import (
     CritiqueResult,
     Report,
     ResearchPlan,
-    ResearchStatus,
     SearchResult,
 )
 

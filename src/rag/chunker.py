@@ -13,10 +13,7 @@ def _find_boundary(text: str, pos: int, window: int = 100) -> int:
     end = min(len(text), pos + window)
     segment = text[start:end]
 
-    boundaries = [
-        m.end() + start
-        for m in re.finditer(r'[.!?]\s+|\n\n|\n(?=[A-Z#\-*])', segment)
-    ]
+    boundaries = [m.end() + start for m in re.finditer(r"[.!?]\s+|\n\n|\n(?=[A-Z#\-*])", segment)]
 
     if boundaries:
         return min(boundaries, key=lambda b: abs(b - pos))
@@ -93,11 +90,13 @@ def chunk_documents(
         chunks = chunk_text(content, chunk_size, chunk_overlap)
 
         for i, chunk in enumerate(chunks):
-            all_chunks.append({
-                "content": chunk,
-                "url": doc.get("url", ""),
-                "title": doc.get("title", ""),
-                "chunk_index": str(i),
-            })
+            all_chunks.append(
+                {
+                    "content": chunk,
+                    "url": doc.get("url", ""),
+                    "title": doc.get("title", ""),
+                    "chunk_index": str(i),
+                }
+            )
 
     return all_chunks

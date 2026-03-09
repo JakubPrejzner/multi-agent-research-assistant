@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import sys
 import time
 from typing import Any
 
@@ -17,7 +16,6 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
 from src.config import get_settings
-from src.models.domain import ResearchDepth, ResearchStatus
 from src.orchestrator.callbacks import StatusEmitter
 from src.orchestrator.graph import run_research
 
@@ -99,10 +97,10 @@ async def _execute_research(
                     progress.update(progress_task, description="[bold green]Complete!")
                 elif event_type == "error":
                     console.print(f"  [red]\u2717[/red] Error: {data.get('error', '')}")
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 continue
 
-    result: dict[str, Any] = research_task.result()
+    result: dict[str, Any] = dict(research_task.result())
     _cli_results[task_id] = result
     return result
 
@@ -118,11 +116,13 @@ def research(
         console.print("[red]Error: depth must be quick, standard, or deep[/red]")
         raise typer.Exit(1)
 
-    console.print(Panel(
-        f"[bold]Query:[/bold] {query}\n[bold]Depth:[/bold] {depth}\n[bold]Model:[/bold] {model or 'default'}",
-        title="Research Assistant",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold]Query:[/bold] {query}\n[bold]Depth:[/bold] {depth}\n[bold]Model:[/bold] {model or 'default'}",
+            title="Research Assistant",
+            border_style="blue",
+        )
+    )
 
     settings = get_settings()
     effective_model = model or settings.default_model
@@ -134,11 +134,13 @@ def research(
         report = result.get("final_report")
         if report:
             console.print()
-            console.print(Panel(
-                Markdown(report.markdown or report.executive_summary),
-                title=report.title,
-                border_style="green",
-            ))
+            console.print(
+                Panel(
+                    Markdown(report.markdown or report.executive_summary),
+                    title=report.title,
+                    border_style="green",
+                )
+            )
 
             timings = result.get("phase_timings", {})
             if timings:
@@ -191,11 +193,13 @@ def show(task_id: str = typer.Argument(help="Task ID to display")) -> None:
         console.print("[yellow]No report available for this task.[/yellow]")
         raise typer.Exit(1)
 
-    console.print(Panel(
-        Markdown(report.markdown or report.executive_summary),
-        title=report.title,
-        border_style="green",
-    ))
+    console.print(
+        Panel(
+            Markdown(report.markdown or report.executive_summary),
+            title=report.title,
+            border_style="green",
+        )
+    )
 
     if report.key_findings:
         console.print("\n[bold]Key Findings:[/bold]")

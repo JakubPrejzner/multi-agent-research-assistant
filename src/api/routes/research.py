@@ -12,7 +12,6 @@ import markdown
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 
-from src.api.middleware import limiter
 from src.api.schemas import (
     ReportResponse,
     ResearchRequest,
@@ -160,8 +159,7 @@ async def get_research_report(
                 "type": "about:blank",
                 "title": "Conflict",
                 "status": 409,
-                "detail": "Report not yet available. Current status: "
-                + str(task["status"].value),
+                "detail": "Report not yet available. Current status: " + str(task["status"].value),
             },
         )
 
@@ -229,7 +227,7 @@ async def research_stream(websocket: WebSocket, task_id: str) -> None:
                 await websocket.send_json(event)
                 if event.get("type") == "complete":
                     break
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 await websocket.send_json({"type": "heartbeat"})
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected for task %s", task_id)

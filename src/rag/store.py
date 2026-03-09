@@ -19,7 +19,7 @@ _client: ClientAPI | None = None
 
 def get_chroma_client() -> ClientAPI:
     """Return a ChromaDB client (persistent local or HTTP)."""
-    global _client  # noqa: PLW0603
+    global _client
     if _client is not None:
         return _client
 
@@ -38,7 +38,7 @@ def get_chroma_client() -> ClientAPI:
 
 def reset_client() -> None:
     """Reset cached client (for testing)."""
-    global _client  # noqa: PLW0603
+    global _client
     _client = None
 
 
@@ -117,14 +117,14 @@ class VectorStore:
         metadatas = results.get("metadatas") or [[]]
         distances = results.get("distances") or [[]]
 
-        for doc, meta, dist in zip(
-            documents[0], metadatas[0], distances[0]
-        ):
-            output.append({
-                "content": doc,
-                "metadata": meta or {},
-                "distance": dist,
-            })
+        for doc, meta, dist in zip(documents[0], metadatas[0], distances[0], strict=False):
+            output.append(
+                {
+                    "content": doc,
+                    "metadata": meta or {},
+                    "distance": dist,
+                }
+            )
 
         return output
 
