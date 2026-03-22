@@ -268,3 +268,8 @@ A query flows through the system like this:
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
+
+
+---
+
+Built by [BitSharp](https://bitsharp.pl) - AI solutions for Polish businesses.
